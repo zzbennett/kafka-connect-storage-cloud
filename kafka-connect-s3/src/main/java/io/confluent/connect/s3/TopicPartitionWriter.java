@@ -171,10 +171,13 @@ public class TopicPartitionWriter {
             SinkRecord record = buffer.peek();
             if (timestampExtractor != null) {
               currentTimestamp = timestampExtractor.extract(record);
-              if (baseRecordTimestamp == null) {
-                baseRecordTimestamp = currentTimestamp;
-              }
+            } else {
+              currentTimestamp = time.milliseconds();
             }
+            if (baseRecordTimestamp == null) {
+              baseRecordTimestamp = currentTimestamp;
+            }
+            
             Schema valueSchema = record.valueSchema();
             String encodedPartition = partitioner.encodePartition(record);
             Schema currentValueSchema = currentSchemas.get(encodedPartition);
